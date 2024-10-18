@@ -1,13 +1,12 @@
 import { Text, View, TextInput, StyleSheet, TouchableOpacity, } from 'react-native';
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
+import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 export default function Index() {
-  const [isPressed, setIsPressed] = useState(false);
-  const handlePressIn = () => {
-    setIsPressed(true);
-  };
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
   
-  return (
+  
+  return (// #2D7C86  #FBC02D  #BF360C
     <View style={styles.container}>
     
        <View style={styles.boxName}>
@@ -17,15 +16,24 @@ export default function Index() {
           <View style={styles.boxContainer}>
             <View style={styles.boxZorlukContainer} >
               
-            <TouchableOpacity style={[styles.boxZorluk, { backgroundColor: '#2D7C86' }]}>
+            <TouchableOpacity
+            style={[styles.boxZorluk, selectedDifficulty === 'easy' ? { backgroundColor: '#B3E0E5' } : { backgroundColor: '#2D7C86' }]}
+            onPress={() => setSelectedDifficulty('easy')}
+          >
             <Text style={styles.text}>Kolay</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.boxZorluk, { backgroundColor: '#FBC02D' }]}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.boxZorluk, selectedDifficulty === 'medium' ? { backgroundColor: '#D2B979' } : { backgroundColor: '#FBC02D' }]}
+            onPress={() => setSelectedDifficulty("medium")}
+          >
             <Text style={styles.text}>Orta</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.boxZorluk, { backgroundColor: '#BF360C' }]}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.boxZorluk, selectedDifficulty === 'hard' ? { backgroundColor: '#D28E79' } : { backgroundColor: '#BF360C' }]}
+            onPress={() => setSelectedDifficulty('hard')}
+          >
             <Text style={styles.text}>Zor</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
             </View>
             <View style={styles.boxSelectContainer}>
               
@@ -49,7 +57,7 @@ export default function Index() {
         <option value="" disabled>
           Seçiniz
         </option>
-        <option value="option1">Seçenek 1</option>
+        <option  style={styles.select} value="option1">Seçenek 1</option>
         <option value="option2">Seçenek 2</option>
         <option value="option3">Seçenek 3</option>
       </select>
