@@ -1,6 +1,7 @@
 import { Text, View, TextInput, StyleSheet, TouchableOpacity, } from 'react-native';
 import { Link } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
 
 import React, { useState, useEffect } from 'react';
 import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
@@ -23,7 +24,7 @@ export default function Index() {
 
 
 
-  const type = ["Rastgele", "Doğru/Yanlış ", "Çoktan Seçmeli"];
+  const type = ["", "boolean", "multiple"];
 
 
   const fetchCategories = async () => {
@@ -59,15 +60,21 @@ export default function Index() {
     fetchQuestion();
   }, []);
 
-  const handlePress = () => {
-    name
-    selectedDifficulty
-    selectedCategory
-    selectedNumber
-    selectedType
+  const navigation = useNavigation();
 
-  }
-
+  const handlePress = async () => {
+    const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
+    console.log("emrebabag")
+    console.log(url)
+    try {
+      const response = await axios.get(url);
+      //navigation.navigate('About', { questions: response.data });
+      console.log(response.data.results);
+      
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (// #2D7C86  #FBC02D  #BF360C
     <View style={styles.container}>
 
@@ -139,9 +146,9 @@ export default function Index() {
           
         </View>
       </View>
-      <TouchableOpacity style={styles.button} >
+      <TouchableOpacity style={styles.button} onPress={handlePress} >
 
-        <Link href="/about" style={styles.text}>
+        <Link href="/about" style={styles.text} >
           Başla
         </Link>
       </TouchableOpacity>
