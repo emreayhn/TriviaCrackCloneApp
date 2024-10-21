@@ -127,7 +127,7 @@ export default function Index() {
             onValueChange={(itemValue) => setSelectedNumber(itemValue)}
           >
 
-            {[...Array(100)].map((_, index) => (
+            {[...Array(50)].map((_, index) => (
               <Picker.Item key={index + 1} label={(index + 1).toString()} value={index + 1} />
             ))}
           </Picker>
