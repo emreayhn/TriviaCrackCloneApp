@@ -25,6 +25,7 @@ export default function Index() {
 
 
   const type = ["", "boolean", "multiple"];
+  
 
 
   const fetchCategories = async () => {
@@ -66,6 +67,7 @@ export default function Index() {
     const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
     console.log("emrebabag")
     console.log(url)
+    
     try {
       const response = await axios.get(url);
       //navigation.navigate('About', { questions: response.data });

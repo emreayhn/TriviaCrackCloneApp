@@ -3,10 +3,13 @@ import { IoMdSquare } from "react-icons/io";
 import { PiTriangleFill } from "react-icons/pi";
 import { GiPlainCircle } from "react-icons/gi";
 import { TbPentagonFilled } from "react-icons/tb";
+import { TfiCup } from "react-icons/tfi";
 
-export default function AboutScreen() {
 
-  
+import { TiTick } from "react-icons/ti";
+import { ImCross } from "react-icons/im";
+
+export default function TfScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.questionContainer}>
@@ -19,29 +22,25 @@ export default function AboutScreen() {
         </View>
       </View>
 
-      <View style={styles.multipleContainer}>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#D32F2F' }]}>
-          <IoMdSquare style={styles.square} />
-          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#FFC107' }]}>
-          <PiTriangleFill style={styles.square} />
+
+
+      <View style={styles.multipleContainerTrueFalse}>
+       
+        <TouchableOpacity style={[styles.chooseTrueFalse, { backgroundColor: '#2D8630' }]}>
+          <TiTick style={styles.squareTrue} />
           <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
 
         </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.chooseTrueFalse, { backgroundColor: '#D32F2F' }]}>
+          <ImCross style={styles.squareFalse} />
+          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
+
+        </TouchableOpacity>
+     
+        
       </View>
-      <View style={styles.multipleContainer}>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#009688' }]}>
-          <GiPlainCircle style={styles.square} />
-          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
-
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#2D8630' }]}>
-          <TbPentagonFilled style={styles.square} />
-          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
-
-        </TouchableOpacity>
-      </View>
+      
 
 
     </View>
@@ -49,6 +48,41 @@ export default function AboutScreen() {
 }
 // 
 const styles = StyleSheet.create({
+    multipleContainerTrueFalse: {
+        width: '100%',
+        height: '44%',
+        backgroundColor: '#D9D9D9',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center'
+      },
+      chooseTrueFalse: {
+        width: '49%',
+        height: '31%',
+        //  backgroundColor:'yellow',
+        borderRadius: 10,
+        alignItems:'center',
+        flexDirection:'row',
+    
+      },
+      squareTrue: {
+        width: '10%',
+        height: '50%',
+        color: 'white',
+        fontWeight: 'bold'
+      },    
+      squareFalse: {
+        width: '10%',
+        height: '25%',
+        color: 'white',
+        fontWeight: 'bold'
+      },  
+      textQuestion:{
+        fontFamily:'alice',
+        fontSize:15,
+            marginLeft:'0.75%',
+
+      },
   container: {
     flex: 1,
     backgroundColor: 'gray',
@@ -63,12 +97,6 @@ const styles = StyleSheet.create({
     borderRadius:10,
    
   },
-  textQuestion:{
-    fontFamily:'alice',
-    fontSize:15,
-    marginLeft:'0.75%',
-  },
-
   textNumber: {
     //   fontWeight:'bold',
     fontSize: 40,
@@ -87,32 +115,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     justifyContent: 'space-around'
   },
-  multipleContainer: {
-    width: '100%',
-    height: '22%',
-    backgroundColor: '#D9D9D9',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-  choose: {
-    width: '49%',
-    height: '62%',
-    //  backgroundColor:'yellow',
-    borderRadius: 10,
-   alignItems:'center',
-   flexDirection:'row',
-   
-   
 
-  },
-  square: {
-    width: '10%',
-    height: '40%',
-    color: 'white',
-    fontWeight: 'bold'
-
-  },
+ 
   sayac: {
     width: '10%',
     height: '40%',
