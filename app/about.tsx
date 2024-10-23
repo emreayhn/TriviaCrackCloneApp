@@ -1,50 +1,91 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import { IoMdSquare } from "react-icons/io";
 import { PiTriangleFill } from "react-icons/pi";
 import { GiPlainCircle } from "react-icons/gi";
 import { TbPentagonFilled } from "react-icons/tb";
+import React, { useEffect, useState } from 'react';
 
 export default function AboutScreen() {
+  const [name, setName] = useState('');
+  const [count , setCount] = useState(1);
 
-  
+   const handlePressNumber =() => {
+     setCount(count + 1)
+  }
+
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('name');
+    if (storedName) {
+      setName(storedName);
+    }
+
+  }, []);
+
+  const deneme = localStorage.getItem("response");
+  const data = deneme ? JSON.parse(deneme) : [];
+  if (data.length === 0) {
+    return <p>Veriler mevcut değil.</p>;
+  }
+
   return (
-    <View style={styles.container}>
+    
+   <> {data.map((data, index) => (
+    <View key={index} style={styles.container}>
       <View style={styles.questionContainer}>
         <View style={styles.menu}>
-          <Text style={styles.textNumber}>1</Text>
-          <Text>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aperiam deserunt pariatur odio dolores doloribus cum ipsum nobis et explicabo, quae soluta possimus tempore cumque iste dignissimos doloremque laborum! Repudiandae, omnis.</Text>
+          <Text style={styles.textNumber}>{count}</Text>
+
+            <Text key={index}>
+              {data.question}
+            </Text>
+
           <TouchableOpacity style={{ width: '10%', height: '100%', paddingTop: '7%' }}>
-            <GiPlainCircle style={{width:'100%', height:'60%'}}/>
+            <GiPlainCircle style={{ width: '100%', height: '60%', }} />
           </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.multipleContainer}>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#D32F2F' }]}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#D32F2F' }]} onPress={handlePressNumber}>
           <IoMdSquare style={styles.square} />
-          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
+          <Text key={index}>
+              {data.correct_answer}
+            </Text>
+        
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#FFC107' }]}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#FFC107' }]} onPress={handlePressNumber}>
           <PiTriangleFill style={styles.square} />
-          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
-
+          
+            <Text key={index}>
+              {data.incorrect_answers[0]}
+            </Text>
+         
         </TouchableOpacity>
       </View>
       <View style={styles.multipleContainer}>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#009688' }]}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#009688' }]} onPress={handlePressNumber}>
           <GiPlainCircle style={styles.square} />
-          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
-
+       
+            <Text key={index}>
+                {data.incorrect_answers[1]}
+            </Text>
+         
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#2D8630' }]}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#2D8630' }]} onPress={handlePressNumber}>
           <TbPentagonFilled style={styles.square} />
-          <Text style={styles.textQuestion}>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, nam.</Text>
-
+         
+            <Text key={index}>
+              {data.incorrect_answers[2]}
+            </Text>
+         
         </TouchableOpacity>
       </View>
 
 
     </View>
+     ))}
+    </>
   );
 }
 // 
@@ -60,25 +101,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius:10,
-   
+    borderRadius: 10,
+    paddingRight:'2%'
+
   },
-  textQuestion:{
-    fontFamily:'alice',
-    fontSize:15,
-    marginLeft:'0.75%',
+  textQuestion: {
+    fontFamily: 'alice',
+    fontSize: 15,
+    marginLeft: '0.75%',
   },
 
   textNumber: {
     //   fontWeight:'bold',
     fontSize: 40,
+    marginLeft:'2%'
   },
   questionContainer: {
     width: '100%',
     height: '50%',
     backgroundColor: 'white',
     paddingHorizontal: '5%',
-    paddingVertical:'2%'
+    paddingVertical: '2%'
 
   },
   box: {
@@ -100,10 +143,10 @@ const styles = StyleSheet.create({
     height: '62%',
     //  backgroundColor:'yellow',
     borderRadius: 10,
-   alignItems:'center',
-   flexDirection:'row',
-   
-   
+    alignItems: 'center',
+    flexDirection: 'row',
+
+
 
   },
   square: {
@@ -126,3 +169,10 @@ const styles = StyleSheet.create({
         Go to About screen
       </Link>
       */
+
+      /*  {data.map((correct, index) => (
+            <Text key={index}>
+              {correct.correct_answer}
+            </Text>
+          ))}
+            */

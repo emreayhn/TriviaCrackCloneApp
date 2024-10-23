@@ -19,13 +19,18 @@ export default function Index() {
   const [selectedQuestion, setSelectedQuestion] = useState("");
   const [question, setQuestion] = useState("");
   const [selectedNumber, setSelectedNumber] = useState(1);
-  const [selectedType, setSelectedType] = useState([]);
+ // const [selectedType, setSelectedType] = useState([]);
+ const [selectedType, setSelectedType] = useState("");
   const [name, setName] = useState("")
 
 
 
   const type = ["", "boolean", "multiple"];
-  
+ 
+const saveName = ()=> {
+  localStorage.setItem("name",name);
+};
+
 
 
   const fetchCategories = async () => {
@@ -67,23 +72,36 @@ export default function Index() {
     const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
     console.log("emrebabag")
     console.log(url)
-    
     try {
       const response = await axios.get(url);
       //navigation.navigate('About', { questions: response.data });
       console.log(response.data.results);
-      
+      localStorage.setItem("response", JSON.stringify(response.data.results));
     } catch (error) {
       console.error(error);
     }
   };
+  /*
+  const handlePress = async () => {
+    const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
+    console.log("Fetching from:", url); // URL'yi kontrol et
+    try {
+      const response = await axios.get(url);
+      console.log("Response data:", response.data); // API yanıtını kontrol et
+      localStorage.setItem("response", JSON.stringify(response.data.results));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  */ 
   return (// #2D7C86  #FBC02D  #BF360C
     <View style={styles.container}>
 
       <View style={styles.boxName}>
         <TextInput style={styles.textInput} placeholder='Adınızı Giriniz ' placeholderTextColor="white" 
         value={name}
-        onChangeText={setName} >
+        onChangeText={setName}
+        >
         </TextInput>
       </View>
       <View style={styles.boxContainer}>
@@ -148,7 +166,11 @@ export default function Index() {
           
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handlePress} >
+      <TouchableOpacity style={styles.button} onPress={() => {
+  handlePress(); 
+  saveName();
+  
+}}>
 
         <Link href="/about" style={styles.text} >
           Başla
