@@ -1,14 +1,34 @@
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { TfiCup } from "react-icons/tfi";
+import { useState ,useEffect } from 'react';
 
 
 
 export default function ScoreBoard() {
 
+  const  [correctAnswers , setCorrectAnswers] = useState("");
+  const [wrongAnswers, setWrongAnswers] = useState("")
+  const [correctCount, setCorrectCount] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  
+  useEffect(() => {
+    const storedCorrectAnswers = localStorage.getItem('correctCount');
+    const storedWrongAnswers = localStorage.getItem('wrongCount');
+  
+    if (storedCorrectAnswers) {
+      setCorrectCount(parseInt(storedCorrectAnswers, 10)); // Sayıya çevir
+    }
+    if (storedWrongAnswers) {
+      setWrongCount(parseInt(storedWrongAnswers, 10)); // Sayıya çevir
+    }
+  }, []);
+  
+
+
   return (
     <View style={styles.container}>
       <View style={styles.list}> 
-            <Text style={styles.textHeader}>YÜKSEK SKORLAR</Text>
+            <Text style={styles.textHeader}>YÜKSEK SKORLAR  </Text>
             <View style={styles.cupContainer}>
                 <TfiCup style={styles.cup}/></View>
             
@@ -19,7 +39,7 @@ export default function ScoreBoard() {
         </TouchableOpacity>
         </View>
         <View>
-            <Text>SKORUNUZ: </Text>
+            <Text>SKORUNUZ: {correctCount} {wrongCount} </Text>
         </View>
       </View>
 
