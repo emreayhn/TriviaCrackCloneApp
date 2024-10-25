@@ -133,7 +133,7 @@ const saveName = ()=> {
             onValueChange={(itemValue) => setSelectedCategory(itemValue)}
           >
             <Picker.Item label="Kategori " value="" />
-            {categories.map(category => (
+            {categories.map((category : any )=> (
               <Picker.Item key={category.id} label={category.name} value={category.id} />
 
             ))}

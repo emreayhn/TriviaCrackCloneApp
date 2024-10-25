@@ -8,6 +8,8 @@ import React, { useEffect, useState } from 'react';
 export default function AboutScreen() {
   const [name, setName] = useState('');
   const [count , setCount] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
 
    const handlePressNumber =() => {
      setCount(count + 1)
@@ -28,16 +30,26 @@ export default function AboutScreen() {
     return <p>Veriler mevcut değil.</p>;
   }
 
+  const handleAnswerPress = (isCorrect?:any) => {
+    setCount(count + 1); // Sayacı artır
+    if (currentIndex < data.length - 1) {
+      setCurrentIndex(currentIndex + 1); // Sonraki soruya geç
+    } else {
+      // Tüm sorular bitince yapılacak işlemler
+      console.log("Tüm sorular bitti.");
+    }
+  };
+
   return (
     
-   <> {data.map((data, index) => (
-    <View key={index} style={styles.container}>
+   
+    <View  style={styles.container}>
       <View style={styles.questionContainer}>
         <View style={styles.menu}>
           <Text style={styles.textNumber}>{count}</Text>
 
-            <Text key={index}>
-              {data.question}
+            <Text >
+            {data[currentIndex].question}
             </Text>
 
           <TouchableOpacity style={{ width: '10%', height: '100%', paddingTop: '7%' }}>
@@ -47,36 +59,36 @@ export default function AboutScreen() {
       </View>
 
       <View style={styles.multipleContainer}>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#D32F2F' }]} onPress={handlePressNumber}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#D32F2F' }]} onPress={() => handleAnswerPress(true)}>
           <IoMdSquare style={styles.square} />
-          <Text key={index}>
-              {data.correct_answer}
+          <Text >
+          {data[currentIndex].correct_answer}
             </Text>
         
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#FFC107' }]} onPress={handlePressNumber}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#FFC107' }]}   onPress={() => handleAnswerPress(false)}>
           <PiTriangleFill style={styles.square} />
           
-            <Text key={index}>
-              {data.incorrect_answers[0]}
+            <Text >
+            {data[currentIndex].incorrect_answers[0]}
             </Text>
          
         </TouchableOpacity>
       </View>
       <View style={styles.multipleContainer}>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#009688' }]} onPress={handlePressNumber}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#009688' }]} onPress={() => handleAnswerPress(false)}>
           <GiPlainCircle style={styles.square} />
        
-            <Text key={index}>
-                {data.incorrect_answers[1]}
+            <Text >
+            {data[currentIndex].incorrect_answers[1]}
             </Text>
          
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.choose, { backgroundColor: '#2D8630' }]} onPress={handlePressNumber}>
+        <TouchableOpacity style={[styles.choose, { backgroundColor: '#2D8630' }]} onPress={() => handleAnswerPress(false)}>
           <TbPentagonFilled style={styles.square} />
          
-            <Text key={index}>
-              {data.incorrect_answers[2]}
+            <Text>
+            {data[currentIndex].incorrect_answers[2]}
             </Text>
          
         </TouchableOpacity>
@@ -84,8 +96,7 @@ export default function AboutScreen() {
 
 
     </View>
-     ))}
-    </>
+   
   );
 }
 // 
@@ -152,7 +163,7 @@ const styles = StyleSheet.create({
   square: {
     width: '10%',
     height: '40%',
-    color: 'white',
+    color: '#D9D9D9',
     fontWeight: 'bold'
 
   },
