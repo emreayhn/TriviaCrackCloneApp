@@ -1,4 +1,4 @@
-import { Text, View, TextInput, StyleSheet, TouchableOpacity, } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Pressable,} from 'react-native';
 import { Link } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
@@ -60,12 +60,12 @@ const saveName = ()=> {
 
   }, []);
 
-
+/*
   useEffect(() => {
 
     fetchQuestion();
   }, []);
-
+*/
   const navigation = useNavigation();
 
   const handlePress = async () => {
@@ -107,24 +107,24 @@ const saveName = ()=> {
       <View style={styles.boxContainer}>
         <View style={styles.boxZorlukContainer} >
 
-          <TouchableOpacity
+          <Pressable
             style={[styles.boxZorluk, selectedDifficulty === 'easy' ? { backgroundColor: '#B3E0E5' } : { backgroundColor: '#2D7C86' }]}
             onPress={() => setSelectedDifficulty('easy')}
           >
             <Text style={styles.text}>Kolay</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={[styles.boxZorluk, selectedDifficulty === 'medium' ? { backgroundColor: '#D2B979' } : { backgroundColor: '#FBC02D' }]}
             onPress={() => setSelectedDifficulty("medium")}
           >
             <Text style={styles.text}>Orta</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={[styles.boxZorluk, selectedDifficulty === 'hard' ? { backgroundColor: '#D28E79' } : { backgroundColor: '#BF360C' }]}
             onPress={() => setSelectedDifficulty('hard')}
           >
             <Text style={styles.text}>Zor</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <View style={styles.boxSelectContainer}>
           <Picker
@@ -166,7 +166,7 @@ const saveName = ()=> {
           
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={() => {
+      <Pressable style={styles.button} onPress={() => {
   handlePress(); 
   saveName();
   
@@ -175,7 +175,7 @@ const saveName = ()=> {
         <Link href="/about" style={styles.text} >
           Başla
         </Link>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

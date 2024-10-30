@@ -1,13 +1,15 @@
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView,Alert } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { IoMdSquare } from "react-icons/io";
 import { PiTriangleFill } from "react-icons/pi";
 import { GiPlainCircle } from "react-icons/gi";
 import { TbPentagonFilled } from "react-icons/tb";
 import React, { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
+import { TiTick } from "react-icons/ti";
+import { ImCross } from "react-icons/im";
 
 
-const shuffleArray = (array:any) => {
+const shuffleArray = (array: any) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -16,21 +18,17 @@ const shuffleArray = (array:any) => {
 };
 
 export default function AboutScreen() {
- 
-  const [count , setCount] = useState(1);
+
+  const [count, setCount] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [options, setOptions] = useState([]);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
 
-   const handlePressNumber =() => {
-     setCount(count + 1)
-  }
   const deneme = localStorage.getItem("response");
   const data = deneme ? JSON.parse(deneme) : [];
   const currentQuestion = data[currentIndex];
-  const [correctAnswers, setCorrectAnswers] = useState([]); 
-  const [wrongAnswers, setWrongAnswers] = useState([]);
-  const [correctCount, setCorrectCount] = useState(0); 
-  const [wrongCount, setWrongCount] = useState(0); 
+
 
   useEffect(() => {
     // Geçerli sorunun cevaplarını karıştır
@@ -41,33 +39,33 @@ export default function AboutScreen() {
     ];
     setOptions(shuffleArray(allOptions)); // Cevapları karıştır ve duruma ayarla
   }, [currentIndex]);
- /*
-  useEffect(() => {
-    const storedName = localStorage.getItem('name');
-    if (storedName) {
-      setName(storedName);
-    }
-
-  }, []);
-
-*/
+  /*
+   useEffect(() => {
+     const storedName = localStorage.getItem('name');
+     if (storedName) {
+       setName(storedName);
+     }
+ 
+   }, []);
+ 
+ */
   if (data.length === 0) {
     return <p>Veriler mevcut değil.</p>;
   }
 
-  const handleAnswerPress = (selectedAnswer:any) => {
+  const handleAnswerPress = (selectedAnswer: any) => {
     const currentQuestion = data[currentIndex];
-  
+
     // Doğru cevabı kontrol et
     if (selectedAnswer === currentQuestion.correct_answer) {
       setCorrectCount(correctCount + 1); // Doğru cevap sayısını artır
     } else {
       setWrongCount(wrongCount + 1); // Yanlış cevap sayısını artır
     }
-  
+
     // Diğer işlemler
-    setCount(count + 1); // Sayacı artır
-    if (currentIndex < data.length - 1) {
+    if (count < data.length) {
+      setCount(count + 1); // Sayacı artır
       setCurrentIndex(currentIndex + 1); // Sonraki soruya geç
     } else {
       Alert.alert("Test Tamamlandı", "Testi bitirmek için butona basın.", [
@@ -75,70 +73,95 @@ export default function AboutScreen() {
       ]);
     }
   };
-  
-  
+
+
   const handleFinishTest = () => {
     localStorage.setItem("correctCount", correctCount.toString());
     localStorage.setItem("wrongCount", wrongCount.toString());
   };
   return (
-    
-   
-    <View  style={styles.container}>
+
+
+    <View style={styles.container}>
       <View style={styles.questionContainer}>
         <View style={styles.menu}>
           <Text style={styles.textNumber}>{count}</Text>
 
-            <Text >
+          <Text >
             {data[currentIndex].question}
-            </Text>
+          </Text>
 
-          <TouchableOpacity style={{ width: '10%', height: '100%', paddingTop: '7%' }}>
+          <Pressable style={{ width: '10%', height: '100%', paddingTop: '7%' }}>
             <GiPlainCircle style={{ width: '100%', height: '60%', }} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 
-      <View style={styles.multipleContainer}>
-        <TouchableOpacity
-          style={[styles.choose, { backgroundColor: '#D32F2F' }]}
-          onPress={handleAnswerPress} // Doğru veya yanlış cevap
-        >
-          <IoMdSquare style={styles.square} />
-          <Text>{options[0]}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.choose, { backgroundColor: '#FFC107' }]}
-          onPress={handleAnswerPress} // Doğru veya yanlış cevap
-        >
-          <PiTriangleFill style={styles.square} />
-          <Text>{options[1]}</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.multipleContainer}>
-        <TouchableOpacity
-          style={[styles.choose, { backgroundColor: '#009688' }]}
-          onPress={handleAnswerPress} // Doğru veya yanlış cevap
-        >
-          <GiPlainCircle style={styles.square} />
-          <Text>{options[2]}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.choose, { backgroundColor: '#2D8630' }]}
-          onPress={handleAnswerPress} // Doğru veya yanlış cevap
-        >
-          <TbPentagonFilled style={styles.square} />
-          <Text>{options[3]}</Text>
-        </TouchableOpacity>
-      </View>
-      {currentIndex === data.length - 1 && (
-        <TouchableOpacity style={styles.finishButton} onPress={handleFinishTest}>
+      {data[currentIndex].type === 'multiple' ? (<>
+        <View style={styles.multipleContainer}>
+          <Pressable
+            style={[styles.choose, { backgroundColor: '#D32F2F' }]}
+            onPress={() => handleAnswerPress(options[0])}
+          >
+            <IoMdSquare style={styles.square} />
+            <Text>{options[0]}</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.choose, { backgroundColor: '#FFC107' }]}
+            onPress={() => handleAnswerPress(options[1])}
+          >
+            <PiTriangleFill style={styles.square} />
+            <Text>{options[1]}</Text>
+          </Pressable>
+        </View>
+        <View style={styles.multipleContainer}>
+          <Pressable
+            style={[styles.choose, { backgroundColor: '#009688' }]}
+            onPress={() => handleAnswerPress(options[2])}
+          >
+            <GiPlainCircle style={styles.square} />
+            <Text>{options[2]}</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.choose, { backgroundColor: '#2D8630' }]}
+            onPress={() => handleAnswerPress(options[3])}
+          >
+            <TbPentagonFilled style={styles.square} />
+            <Text>{options[3]}</Text>
+          </Pressable>
+        </View>
+
+      </>) : (<>
+
+        <View style={styles.multipleContainerTrueFalse}>
+
+          <Pressable style={[styles.chooseTrueFalse, { backgroundColor: '#2D8630' }]}>
+            <TiTick style={styles.squareTrue} />
+            <Text style={styles.textQuestion}
+              onPress={() => handleAnswerPress(options)}>{options[0]}</Text>
+
+          </Pressable>
+
+          <Pressable style={[styles.chooseTrueFalse, { backgroundColor: '#D32F2F' }]}>
+            <ImCross style={styles.squareFalse} />
+            <Text style={styles.textQuestion}
+              onPress={() => handleAnswerPress(options)}>{options[1]}</Text>
+
+          </Pressable>
+
+
+        </View>
+
+
+      </>)}
+      {currentIndex === data.length -1 && (
+        <Pressable style={styles.finishButton} onPress={handleFinishTest}>
           <Link href={"/scoreBoard"} style={styles.finishButtonText}>Testi Bitir</Link>
-         
-        </TouchableOpacity>
+
+        </Pressable>
       )}
     </View>
-  
+
   );
 }
 
@@ -162,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 10,
-    paddingRight:'2%'
+    paddingRight: '2%'
 
   },
   textQuestion: {
@@ -171,13 +194,13 @@ const styles = StyleSheet.create({
     marginLeft: '0.75%',
   },
   finishButton: {
-    height:'10%',
-    width:'10%',
-    marginLeft:'45%',
+    height: '10%',
+    width: '10%',
+    marginLeft: '45%',
     backgroundColor: '#2196F3',
     borderRadius: 15,
     alignItems: 'center',
-    justifyContent:'center'
+    justifyContent: 'center'
   },
   finishButtonText: {
     color: '#FFFFFF',
@@ -187,7 +210,7 @@ const styles = StyleSheet.create({
   textNumber: {
     //   fontWeight:'bold',
     fontSize: 40,
-    marginLeft:'2%'
+    marginLeft: '2%'
   },
   questionContainer: {
     width: '100%',
@@ -235,6 +258,35 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold'
   },
+  multipleContainerTrueFalse: {
+    width: '100%',
+    height: '44%',
+    backgroundColor: '#D9D9D9',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  chooseTrueFalse: {
+    width: '49%',
+    height: '31%',
+    //  backgroundColor:'yellow',
+    borderRadius: 10,
+    alignItems: 'center',
+    flexDirection: 'row',
+
+  },
+  squareTrue: {
+    width: '10%',
+    height: '50%',
+    color: 'white',
+    fontWeight: 'bold'
+  },
+  squareFalse: {
+    width: '10%',
+    height: '25%',
+    color: 'white',
+    fontWeight: 'bold'
+  },
 });
 
 /* <Text style={styles.text}>Home screen</Text>
@@ -243,9 +295,9 @@ const styles = StyleSheet.create({
       </Link>
       */
 
-      /*  {data.map((correct, index) => (
-            <Text key={index}>
-              {correct.correct_answer}
-            </Text>
-          ))}
-            */
+/*  {data.map((correct, index) => (
+      <Text key={index}>
+        {correct.correct_answer}
+      </Text>
+    ))}
+      */

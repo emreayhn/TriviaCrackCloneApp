@@ -10,16 +10,20 @@ export default function ScoreBoard() {
   const [wrongAnswers, setWrongAnswers] = useState("")
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
+  const [name, setName] = useState("")
   
   useEffect(() => {
     const storedCorrectAnswers = localStorage.getItem('correctCount');
     const storedWrongAnswers = localStorage.getItem('wrongCount');
-  
+    const storedName = localStorage.getItem('name')
     if (storedCorrectAnswers) {
       setCorrectCount(parseInt(storedCorrectAnswers, 10)); // Sayıya çevir
     }
     if (storedWrongAnswers) {
       setWrongCount(parseInt(storedWrongAnswers, 10)); // Sayıya çevir
+    }
+    if (storedName) {
+      setName(storedName);
     }
   }, []);
   
@@ -33,13 +37,13 @@ export default function ScoreBoard() {
                 <TfiCup style={styles.cup}/></View>
             
             <View style={styles.menu}>
-            <TouchableOpacity style={[styles.choose, { backgroundColor: '#EBFF00' }]}>
-         <Text>1</Text>
+            <View style={[styles.choose, { backgroundColor: '#EBFF00' }]}>
+         <Text> 1.Yarışmacı: {name}  {correctCount} </Text>
 
-        </TouchableOpacity>
+        </View>
         </View>
         <View>
-            <Text>SKORUNUZ: {correctCount} {wrongCount} </Text>
+            <Text>SKORUNUZ: Doğru Cevap Sayısı: {correctCount} Yanlış Cevap Sayısı: {wrongCount} </Text>
         </View>
       </View>
 
@@ -87,12 +91,13 @@ color:'#AED581'
   marginTop:'2%'
   },
   choose: {
-    width: '39%',
+    width: '29%',
     height: '20%',
     //  backgroundColor:'yellow',
     borderRadius: 10,
     alignItems:'center',
-  flexDirection:'row'
+  flexDirection:'row',
+  justifyContent:'space-evenly'
 
   },
 });
