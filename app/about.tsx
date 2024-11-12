@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
 import { TiTick } from "react-icons/ti";
 import { ImCross } from "react-icons/im";
-
+import axios from "axios";
 
 const shuffleArray = (array: any) => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -22,12 +22,15 @@ export default function AboutScreen() {
   const [count, setCount] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [options, setOptions] = useState([]);
-  const [correctCount, setCorrectCount] = useState(0);
+  const [score, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
 
   const deneme = localStorage.getItem("response");
   const data = deneme ? JSON.parse(deneme) : [];
   const currentQuestion = data[currentIndex];
+
+  const [name, setName] = useState("")
+  const [message, setMessage] = useState<string>("");
 
 
   useEffect(() => {
@@ -39,7 +42,7 @@ export default function AboutScreen() {
     ];
     setOptions(shuffleArray(allOptions)); // Cevapları karıştır ve duruma ayarla
   }, [currentIndex]);
-  /*
+  
    useEffect(() => {
      const storedName = localStorage.getItem('name');
      if (storedName) {
@@ -48,7 +51,7 @@ export default function AboutScreen() {
  
    }, []);
  
- */
+ 
   if (data.length === 0) {
     return <p>Veriler mevcut değil.</p>;
   }
@@ -58,7 +61,7 @@ export default function AboutScreen() {
 
     // Doğru cevabı kontrol et
     if (selectedAnswer === currentQuestion.correct_answer) {
-      setCorrectCount(correctCount + 1); // Doğru cevap sayısını artır
+      setCorrectCount(score + 1); // Doğru cevap sayısını artır
     } else {
       setWrongCount(wrongCount + 1); // Yanlış cevap sayısını artır
     }
@@ -73,12 +76,30 @@ export default function AboutScreen() {
       ]);
     }
   };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const userData = { name, score };
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/users/", userData);
+      setMessage("User added successfully");
+    } catch (error) {
+      setMessage("Error adding user");
+      console.error(error);
+    }
+  };
 
 
   const handleFinishTest = () => {
-    localStorage.setItem("correctCount", correctCount.toString());
+    localStorage.setItem("correctCount", score.toString());
     localStorage.setItem("wrongCount", wrongCount.toString());
   };
+
+  const handleBoth = (e: React.FormEvent) => {
+    handleFinishTest();
+    handleSubmit(e); 
+  };
+  
+  
   return (
 
 
@@ -155,8 +176,8 @@ export default function AboutScreen() {
 
       </>)}
       {currentIndex === data.length -1 && (
-        <Pressable style={styles.finishButton} onPress={handleFinishTest}>
-          <Link href={"/scoreBoard"} style={styles.finishButtonText}>Testi Bitir</Link>
+        <Pressable style={styles.finishButton} onPress={handleBoth} >
+          <Link href={"/scoreBoard"} style={styles.finishButtonText}>Testi Bitir {name} </Link>
 
         </Pressable>
       )}
@@ -301,3 +322,4 @@ const styles = StyleSheet.create({
       </Text>
     ))}
       */
+
