@@ -22,6 +22,7 @@ export default function AboutScreen() {
   const [count, setCount] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [options, setOptions] = useState([]);
+  const [tfOptions, setTfOptions] = useState([]);
   const [score, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
 
@@ -34,14 +35,23 @@ export default function AboutScreen() {
 
 
   useEffect(() => {
-    // Geçerli sorunun cevaplarını karıştır
     const currentQuestion = data[currentIndex];
-    const allOptions = [
-      currentQuestion.correct_answer,
-      ...currentQuestion.incorrect_answers
-    ];
-    setOptions(shuffleArray(allOptions)); // Cevapları karıştır ve duruma ayarla
+  
+    if (currentQuestion.type === 'multiple') {
+      // Çoktan seçmeli sorular için
+      const allOptions = [
+        currentQuestion.correct_answer,
+        ...currentQuestion.incorrect_answers
+      ];
+      setOptions(shuffleArray(allOptions)); // Cevapları karıştır ve duruma ayarla
+    } else if (currentQuestion.type === 'boolean') {
+      // Doğru/Yanlış soruları için
+      setOptions(['Doğru', 'Yanlış']);
+    }
   }, [currentIndex]);
+  
+
+  
   
    useEffect(() => {
      const storedName = localStorage.getItem('name');
@@ -56,17 +66,19 @@ export default function AboutScreen() {
     return <p>Veriler mevcut değil.</p>;
   }
 
-  const handleAnswerPress = (selectedAnswer: any) => {
+  
+  const handleAnswerPress = (selectedAnswer:any) => {
     const currentQuestion = data[currentIndex];
-
+  
     // Doğru cevabı kontrol et
-    if (selectedAnswer === currentQuestion.correct_answer) {
+    if (selectedAnswer === currentQuestion.correct_answer || 
+        selectedAnswer === (currentQuestion.correct_answer === 'True' ? 'Doğru' : 'Yanlış')) {
       setCorrectCount(score + 1); // Doğru cevap sayısını artır
     } else {
       setWrongCount(wrongCount + 1); // Yanlış cevap sayısını artır
     }
-
-    // Diğer işlemler
+  
+    // Diğer işlemler: Sonraki soruya geçiş
     if (count < data.length) {
       setCount(count + 1); // Sayacı artır
       setCurrentIndex(currentIndex + 1); // Sonraki soruya geç
@@ -76,9 +88,13 @@ export default function AboutScreen() {
       ]);
     }
   };
+  
+
+  const event_datetime = new Date();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const userData = { name, score };
+    const userData = { name, score, count_quiz, event_datetime };
     try {
       const response = await axios.post("http://127.0.0.1:8000/users/", userData);
       setMessage("User added successfully");
@@ -92,6 +108,7 @@ export default function AboutScreen() {
   const handleFinishTest = () => {
     localStorage.setItem("correctCount", score.toString());
     localStorage.setItem("wrongCount", wrongCount.toString());
+   
   };
 
   const handleBoth = (e: React.FormEvent) => {
@@ -99,6 +116,12 @@ export default function AboutScreen() {
     handleSubmit(e); 
   };
   
+
+
+let count_quiz = localStorage.getItem("selectedNumber");
+
+
+
   
   return (
 
@@ -156,17 +179,19 @@ export default function AboutScreen() {
 
         <View style={styles.multipleContainerTrueFalse}>
 
-          <Pressable style={[styles.chooseTrueFalse, { backgroundColor: '#2D8630' }]}>
+          <Pressable onPress={() => handleAnswerPress(options[0])}
+          style={[styles.chooseTrueFalse, { backgroundColor: '#2D8630' }]}>
             <TiTick style={styles.squareTrue} />
             <Text style={styles.textQuestion}
-              onPress={() => handleAnswerPress(options)}>{options[0]}</Text>
+              >{options[0]}</Text>
 
           </Pressable>
 
-          <Pressable style={[styles.chooseTrueFalse, { backgroundColor: '#D32F2F' }]}>
+          <Pressable  onPress={() => handleAnswerPress(options[1])} 
+          style={[styles.chooseTrueFalse, { backgroundColor: '#D32F2F' }]}>
             <ImCross style={styles.squareFalse} />
             <Text style={styles.textQuestion}
-              onPress={() => handleAnswerPress(options)}>{options[1]}</Text>
+            >{options[1]}</Text>
 
           </Pressable>
 
@@ -177,7 +202,7 @@ export default function AboutScreen() {
       </>)}
       {currentIndex === data.length -1 && (
         <Pressable style={styles.finishButton} onPress={handleBoth} >
-          <Link href={"/scoreBoard"} style={styles.finishButtonText}>Testi Bitir {name} </Link>
+          <Link href={"/scoreBoard"} style={styles.finishButtonText}>Testi Bitir</Link>
 
         </Pressable>
       )}
@@ -281,7 +306,7 @@ const styles = StyleSheet.create({
   },
   multipleContainerTrueFalse: {
     width: '100%',
-    height: '44%',
+    height: '40%',
     backgroundColor: '#D9D9D9',
     flexDirection: 'row',
     justifyContent: 'space-around',

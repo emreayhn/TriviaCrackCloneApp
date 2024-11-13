@@ -1,8 +1,8 @@
 import { Text, View, TextInput, StyleSheet, Pressable,} from 'react-native';
 import { Link } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
-import { useNavigation } from '@react-navigation/native';
-
+import { useNavigation } from 'react-router-dom';
+import { useRouter } from 'expo-router'; // Correct import for Expo Router
 import React, { useState, useEffect } from 'react';
 import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 import axios from 'axios';
@@ -29,6 +29,7 @@ export default function Index() {
  
 const saveName = ()=> {
   localStorage.setItem("name",name);
+  localStorage.setItem("selectedNumber", selectedNumber.toString());
 };
 
 
@@ -66,7 +67,7 @@ const saveName = ()=> {
     fetchQuestion();
   }, []);
 */
-  const navigation = useNavigation();
+const router = useRouter();
 
   const handlePress = async () => {
     const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
@@ -74,7 +75,7 @@ const saveName = ()=> {
     console.log(url)
     try {
       const response = await axios.get(url);
-      //navigation.navigate('About', { questions: response.data });
+      router.push('/about');  // path olarak
       console.log(response.data.results);
       localStorage.setItem("response", JSON.stringify(response.data.results));
     } catch (error) {
@@ -172,9 +173,9 @@ const saveName = ()=> {
   
 }}>
 
-        <Link href="/about" style={styles.text} >
+        <Text  style={styles.text} >
           Başla
-        </Link>
+        </Text>
       </Pressable>
     </View>
   );

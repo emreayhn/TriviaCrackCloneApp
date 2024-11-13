@@ -1,7 +1,16 @@
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { TfiCup } from "react-icons/tfi";
 import { useState ,useEffect } from 'react';
+import axios from "axios";
 
+interface User {
+  id: number;
+  name: string;
+  score: number;
+  event_datetime: number;
+  count_quiz: number;
+  
+}
 
 
 export default function ScoreBoard() {
@@ -11,11 +20,19 @@ export default function ScoreBoard() {
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
   const [name, setName] = useState("")
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+   
+  
   
   useEffect(() => {
     const storedCorrectAnswers = localStorage.getItem('correctCount');
     const storedWrongAnswers = localStorage.getItem('wrongCount');
     const storedName = localStorage.getItem('name')
+    
     if (storedCorrectAnswers) {
       setCorrectCount(parseInt(storedCorrectAnswers, 10)); // Sayıya çevir
     }
@@ -25,6 +42,22 @@ export default function ScoreBoard() {
     if (storedName) {
       setName(storedName);
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/scoreboard/");
+        setUsers(response.data); 
+      } catch (err) {
+        setError("Error fetching users");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
   }, []);
   
 
@@ -37,14 +70,15 @@ export default function ScoreBoard() {
                 <TfiCup style={styles.cup}/></View>
             
             <View style={styles.menu}>
-            <View style={[styles.choose, { backgroundColor: '#EBFF00' }]}>
-         <Text> 1.Yarışmacı: {name}  {correctCount} </Text>
+            {users.slice(0, 5).map((user) => 
+            <View key={user.id}  style={[styles.choose, { backgroundColor: '#EBFF00' }]}>
+         <Text>{user.name}      {user.score}/{user.count_quiz}      {user.event_datetime}</Text>
 
+        </View> 
+        )}
+        <Text style={styles.scoreText}>SKORUNUZ: Doğru Cevap Sayısı: {correctCount} Yanlış Cevap Sayısı: {wrongCount} </Text>
         </View>
-        </View>
-        <View>
-            <Text>SKORUNUZ: Doğru Cevap Sayısı: {correctCount} Yanlış Cevap Sayısı: {wrongCount} </Text>
-        </View>
+       
       </View>
 
 
@@ -97,8 +131,21 @@ color:'#AED581'
     borderRadius: 10,
     alignItems:'center',
   flexDirection:'row',
-  justifyContent:'space-evenly'
+  marginBottom:'0.5%',
+  justifyContent:'space-around'
+  
 
   },
+  scoreText:{
+    fontWeight:'bold',
+    fontSize:20
+  }
 });
   
+
+
+ /*
+        <View style={styles.scoreContainer}>
+            <Text>SKORUNUZ: Doğru Cevap Sayısı: {correctCount} Yanlış Cevap Sayısı: {wrongCount} </Text>
+        </View>
+        */
