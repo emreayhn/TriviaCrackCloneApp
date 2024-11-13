@@ -35,20 +35,15 @@ export default function AboutScreen() {
 
 
   useEffect(() => {
+    // Geçerli sorunun cevaplarını karıştır
     const currentQuestion = data[currentIndex];
-  
-    if (currentQuestion.type === 'multiple') {
-      // Çoktan seçmeli sorular için
-      const allOptions = [
-        currentQuestion.correct_answer,
-        ...currentQuestion.incorrect_answers
-      ];
-      setOptions(shuffleArray(allOptions)); // Cevapları karıştır ve duruma ayarla
-    } else if (currentQuestion.type === 'boolean') {
-      // Doğru/Yanlış soruları için
-      setOptions(['Doğru', 'Yanlış']);
-    }
+    const allOptions = [
+      currentQuestion.correct_answer,
+      ...currentQuestion.incorrect_answers
+    ];
+    setOptions(shuffleArray(allOptions)); // Cevapları karıştır ve duruma ayarla
   }, [currentIndex]);
+
   
 
   
