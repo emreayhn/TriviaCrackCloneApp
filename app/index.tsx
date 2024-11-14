@@ -1,4 +1,4 @@
-import { Text, View, TextInput, StyleSheet, Pressable,} from 'react-native';
+import { Text, View, TextInput, StyleSheet, Pressable, Modal} from 'react-native';
 import { Link } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from 'react-router-dom';
@@ -67,21 +67,26 @@ const saveName = ()=> {
     fetchQuestion();
   }, []);
 */
+const [isModalVisible, setIsModalVisible] = useState(false);
 const router = useRouter();
 
-  const handlePress = async () => {
-    const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
-    console.log("emrebabag")
-    console.log(url)
-    try {
-      const response = await axios.get(url);
-      router.push('/about');  // path olarak
-      console.log(response.data.results);
+const handlePress = async () => {
+  
+  const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
+  console.log("Fetching from:", url);
+  try {
+    const response = await axios.get(url);
+    if (response.data.results.length === 0) { 
+    setIsModalVisible(true);
+    } else {
+      router.push('/about');
       localStorage.setItem("response", JSON.stringify(response.data.results));
-    } catch (error) {
-      console.error(error);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
   /*
   const handlePress = async () => {
     const url = `https://opentdb.com/api.php?amount=${selectedNumber}&category=${selectedCategory}&difficulty=${selectedDifficulty}&type=${selectedType}`;
@@ -97,7 +102,24 @@ const router = useRouter();
   */ 
   return (// #2D7C86  #FBC02D  #BF360C
     <View style={styles.container}>
-
+ <Modal
+        transparent={true}
+        animationType="slide"
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalText}>Seçtiğiniz sayıda soru bulunamamaktadır.</Text>
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => setIsModalVisible(false)}
+            >
+              <Text style={styles.text}>Tamam</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.boxName}>
         <TextInput style={styles.textInput} placeholder='Adınızı Giriniz ' placeholderTextColor="white" 
         value={name}
@@ -276,6 +298,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontWeight: 'bold',
     padding: '1%'
-  }
-
+  },
+  
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#2D7C86',
+    padding: 10,
+    borderRadius: 10,
+  },
 });
+

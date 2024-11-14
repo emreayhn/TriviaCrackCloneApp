@@ -32,7 +32,7 @@ export default function AboutScreen() {
 
   const [name, setName] = useState("")
   const [message, setMessage] = useState<string>("");
-
+  const [showFinishButton, setShowFinishButton] = useState(false);
 
   useEffect(() => {
     // Geçerli sorunun cevaplarını karıştır
@@ -64,25 +64,24 @@ export default function AboutScreen() {
   
   const handleAnswerPress = (selectedAnswer:any) => {
     const currentQuestion = data[currentIndex];
-  
-    // Doğru cevabı kontrol et
-    if (selectedAnswer === currentQuestion.correct_answer || 
-        selectedAnswer === (currentQuestion.correct_answer === 'True' ? 'Doğru' : 'Yanlış')) {
-      setCorrectCount(score + 1); // Doğru cevap sayısını artır
+
+    if (selectedAnswer === currentQuestion.correct_answer) {
+      setCorrectCount(score + 1);
     } else {
-      setWrongCount(wrongCount + 1); // Yanlış cevap sayısını artır
+      setWrongCount(wrongCount + 1);
     }
-  
-    // Diğer işlemler: Sonraki soruya geçiş
-    if (count < data.length) {
-      setCount(count + 1); // Sayacı artır
-      setCurrentIndex(currentIndex + 1); // Sonraki soruya geç
+
+    if (currentIndex < data.length - 1) {
+      // Sondan önceki sorularda sadece bir sonraki soruya geç
+      setCount(count + 1);
+      setCurrentIndex(currentIndex + 1);
     } else {
-      Alert.alert("Test Tamamlandı", "Testi bitirmek için butona basın.", [
-        { text: "Tamam" }
-      ]);
+      // Son soruya cevap verildiğinde butonu göster
+      setShowFinishButton(true);
+      Alert.alert("Test Tamamlandı", "Testi bitirmek için butona basın.");
     }
   };
+
   
 
   const event_datetime = new Date();
@@ -192,13 +191,10 @@ let count_quiz = localStorage.getItem("selectedNumber");
 
 
         </View>
-
-
       </>)}
-      {currentIndex === data.length -1 && (
-        <Pressable style={styles.finishButton} onPress={handleBoth} >
+      {showFinishButton && (
+        <Pressable style={styles.finishButton}>
           <Link href={"/scoreBoard"} style={styles.finishButtonText}>Testi Bitir</Link>
-
         </Pressable>
       )}
     </View>
