@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Pressable, Alert, TouchableOpacity, Modal } from 'react-native';
 import { IoMdSquare } from "react-icons/io";
 import { PiTriangleFill } from "react-icons/pi";
 import { GiPlainCircle } from "react-icons/gi";
@@ -33,15 +33,45 @@ export default function AboutScreen() {
   const [name, setName] = useState("")
   const [message, setMessage] = useState<string>("");
   const [showFinishButton, setShowFinishButton] = useState(false);
+  const [isAnswered, setIsAnswered] = useState(false);
+
+  
+
+  const [seconds, setSeconds] = useState(30);
+  
+  useEffect(() => {
+    if (seconds > 0) {
+      const timer = setInterval(() => {
+        setSeconds(geriSayım => geriSayım - 1); 
+      }, 1000);
+
+      return () => clearInterval(timer); 
+    }
+  }, [seconds]);
+
+  const [finishedTime, setFinishedTime] = useState(false);
 
   useEffect(() => {
-    // Geçerli sorunun cevaplarını karıştır
-    const currentQuestion = data[currentIndex];
-    const allOptions = [
-      currentQuestion.correct_answer,
-      ...currentQuestion.incorrect_answers
-    ];
-    setOptions(shuffleArray(allOptions)); // Cevapları karıştır ve duruma ayarla
+    if (seconds === 0){
+      setFinishedTime(true)
+    }
+  },)
+
+ 
+
+  const handleReset = () => {
+   
+  };
+
+  useEffect(() => {
+    if (data.length > 0) {
+      const allOptions = [
+        currentQuestion.correct_answer,
+        ...currentQuestion.incorrect_answers,
+      ];
+      setOptions(shuffleArray(allOptions)); 
+    }
+    setIsAnswered(false); 
   }, [currentIndex]);
 
   
@@ -60,17 +90,24 @@ export default function AboutScreen() {
   if (data.length === 0) {
     return <p>Veriler mevcut değil.</p>;
   }
-
+   
+   const [showAnswer, setShowAnnwer] = useState("")
   
-  const handleAnswerPress = (selectedAnswer:any) => {
+  const handleAnswerPress = (selectedAnswer: any) => {
+    if (isAnswered === true) return; 
+    
     const currentQuestion = data[currentIndex];
-
     if (selectedAnswer === currentQuestion.correct_answer) {
       setCorrectCount(score + 1);
     } else {
       setWrongCount(wrongCount + 1);
     }
+    setIsAnswered(true); 
+    setShowAnnwer(data[currentIndex].correct_answer)
+  };
 
+
+  const handleNextButton = (selectedAnswer:any) => {
     if (currentIndex < data.length - 1) {
       // Sondan önceki sorularda sadece bir sonraki soruya geç
       setCount(count + 1);
@@ -80,8 +117,10 @@ export default function AboutScreen() {
       setShowFinishButton(true);
       Alert.alert("Test Tamamlandı", "Testi bitirmek için butona basın.");
     }
-  };
-
+    setSeconds(30); 
+    setShowAnnwer("")
+    
+  }
   
 
   const event_datetime = new Date();
@@ -108,19 +147,39 @@ export default function AboutScreen() {
   const handleBoth = (e: React.FormEvent) => {
     handleFinishTest();
     handleSubmit(e); 
+    setSeconds(30); 
+    
   };
   
 
 
 let count_quiz = localStorage.getItem("selectedNumber");
-
-
-
   
   return (
 
 
     <View style={styles.container}>
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={finishedTime}
+        onRequestClose={() => setFinishedTime(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalText}>Süreniz Doldu. Lütfen sıradaki soruya geçiniz Doğru Cevap:{(data[currentIndex].correct_answer)} </Text>
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => {
+                setFinishedTime(false); 
+                handleNextButton();    
+              }}
+            >
+              <Text style={styles.finishButtonText}>Tamam</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.questionContainer}>
         <View style={styles.menu}>
           <Text style={styles.textNumber}>{count}</Text>
@@ -129,74 +188,110 @@ let count_quiz = localStorage.getItem("selectedNumber");
             {data[currentIndex].question}
           </Text>
 
-          <Pressable style={{ width: '10%', height: '100%', paddingTop: '7%' }}>
-            <GiPlainCircle style={{ width: '100%', height: '60%', }} />
+          <Pressable style={{ width: '10%', height: '100%', paddingTop: '7%' }} >
+            <View style={{ width: '75%', height: '60%', backgroundColor:'white', borderRadius:200, 
+              justifyContent:'center', alignItems:'center'
+            }} > 
+              <Text >{seconds}</Text>
+            </View>
+            
           </Pressable>
         </View>
       </View>
 
       {data[currentIndex].type === 'multiple' ? (<>
         <View style={styles.multipleContainer}>
-          <Pressable
+          <TouchableOpacity
             style={[styles.choose, { backgroundColor: '#D32F2F' }]}
             onPress={() => handleAnswerPress(options[0])}
+            disabled={isAnswered}
           >
             <IoMdSquare style={styles.square} />
             <Text>{options[0]}</Text>
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
             style={[styles.choose, { backgroundColor: '#FFC107' }]}
             onPress={() => handleAnswerPress(options[1])}
+            disabled={isAnswered}
           >
             <PiTriangleFill style={styles.square} />
             <Text>{options[1]}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View style={styles.multipleContainer}>
-          <Pressable
+          <TouchableOpacity
             style={[styles.choose, { backgroundColor: '#009688' }]}
             onPress={() => handleAnswerPress(options[2])}
+            disabled={isAnswered}
           >
             <GiPlainCircle style={styles.square} />
             <Text>{options[2]}</Text>
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
             style={[styles.choose, { backgroundColor: '#2D8630' }]}
             onPress={() => handleAnswerPress(options[3])}
+            disabled={isAnswered}
           >
             <TbPentagonFilled style={styles.square} />
             <Text>{options[3]}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
       </>) : (<>
 
         <View style={styles.multipleContainerTrueFalse}>
 
-          <Pressable onPress={() => handleAnswerPress(options[0])}
+          <TouchableOpacity onPress={() => handleAnswerPress(options[0])}
+          disabled={isAnswered}
           style={[styles.chooseTrueFalse, { backgroundColor: '#2D8630' }]}>
             <TiTick style={styles.squareTrue} />
             <Text style={styles.textQuestion}
               >{options[0]}</Text>
 
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable  onPress={() => handleAnswerPress(options[1])} 
+          <TouchableOpacity  onPress={() => handleAnswerPress(options[1])} 
+          disabled={isAnswered}
           style={[styles.chooseTrueFalse, { backgroundColor: '#D32F2F' }]}>
             <ImCross style={styles.squareFalse} />
             <Text style={styles.textQuestion}
             >{options[1]}</Text>
 
-          </Pressable>
+          </TouchableOpacity>
 
 
         </View>
       </>)}
-      {showFinishButton && (
-        <Pressable style={styles.finishButton}>
-          <Link href={"/scoreBoard"} style={styles.finishButtonText}>Testi Bitir</Link>
-        </Pressable>
-      )}
+      {showFinishButton ? (
+  <Pressable style={styles.finishButton} onPress={handleBoth}>
+    <Link href="/scoreBoard" style={styles.finishButtonText}>
+      Testi Bitir
+    </Link>
+  </Pressable>
+) : (
+  <View style={styles.buttonContainer}>
+    <View style={styles.nexthButton}>
+      <Text>
+      Doğru Sayınız:{score}  Yanlış Sayınız:{wrongCount}
+      </Text>
+  </View>
+  <View style={styles.nexthButton}>
+  <Text
+  style={{
+    color: data[currentIndex].correct_answer === showAnswer ? 'red' : 'green',
+    fontWeight: 'bold',
+  }}
+>
+  {showAnswer}
+</Text>
+
+  </View>
+  <Pressable style={styles.nexthButton} onPress={handleNextButton}>
+    <Text style={styles.finishButtonText}> Sıradaki Soru   </Text>
+  </Pressable>
+  </View>
+)}
+
     </View>
 
   );
@@ -206,7 +301,7 @@ let count_quiz = localStorage.getItem("selectedNumber");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'gray',
+    backgroundColor: '#D9D9D9',
   },
   row: {
     flexDirection: 'row',
@@ -222,7 +317,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 10,
-    paddingRight: '2%'
+    paddingRight: '2%',
+   
+  },
+  buttonContainer: {
+      width:'100%',
+      height:'100%',
+     // backgroundColor:'yellow',
+      flexDirection:'row',
+      justifyContent:'space-between',
+      paddingHorizontal:'5%'
+  },
+  nexthButton:{
+    height: '9%',
+    width: '20%',
+    backgroundColor: 'gray',
+    borderRadius: 10,
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  nexthButtonText: {
 
   },
   textQuestion: {
@@ -231,10 +345,10 @@ const styles = StyleSheet.create({
     marginLeft: '0.75%',
   },
   finishButton: {
-    height: '10%',
+    height: '9%',
     width: '10%',
     marginLeft: '45%',
-    backgroundColor: '#2196F3',
+    backgroundColor: 'gray',
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center'
@@ -253,15 +367,16 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '50%',
     backgroundColor: 'white',
-    paddingHorizontal: '5%',
+    paddingHorizontal: '1%',
     paddingVertical: '2%'
-
+    
   },
   box: {
     width: '100%',
     height: '50%',
     backgroundColor: 'black',
     justifyContent: 'space-around'
+    
   },
   multipleContainer: {
     width: '100%',
@@ -269,7 +384,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center'
+    alignItems: 'center',
+    
   },
   choose: {
     width: '49%',
@@ -323,6 +439,28 @@ const styles = StyleSheet.create({
     height: '25%',
     color: 'white',
     fontWeight: 'bold'
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '50%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#2D7C86',
+    padding: 10,
+    borderRadius: 10,
   },
 });
 
