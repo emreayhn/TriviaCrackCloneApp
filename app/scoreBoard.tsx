@@ -71,12 +71,12 @@ export default function ScoreBoard() {
             
             <View style={styles.menu}>
             {users.slice(0, 5).map((user) => 
-            <View key={user.id}  style={[styles.choose, { backgroundColor: '#EBFF00' }]}>
+            <View key={user.id}  style={[styles.choose, { backgroundColor: '#81C784' }]}>
          <Text>{user.name}      {user.score}/{user.count_quiz}      {user.event_datetime}</Text>
 
         </View> 
         )}
-        <Text style={styles.scoreText}>SKORUNUZ: Doğru Cevap Sayısı: {correctCount} Yanlış Cevap Sayısı: {wrongCount} </Text>
+        <Text style={styles.scoreText}>SKORUNUZ  Doğru Cevap Sayısı: {correctCount} Yanlış Cevap Sayısı: {wrongCount} </Text>
         </View>
        
       </View>
@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
      
   container: {
     flex: 1,
-    backgroundColor: 'gray',
+    backgroundColor: '#CCCCCC',
   },
   textHeader:{
 fontSize:25,
 fontWeight:'bold',
-color:'#AED581'
+color:'#555555'
   },
 
   list:{
@@ -115,7 +115,7 @@ color:'#AED581'
   cup:{
     width: '100%',
     height: '150%',
-    color: 'white',
+    color: '#EAFF2C',
     fontWeight: 'bold'
   },
   menu:{
@@ -138,7 +138,8 @@ color:'#AED581'
   },
   scoreText:{
     fontWeight:'bold',
-    fontSize:20
+    fontSize:20,
+    color:'#555555'
   }
 });
   

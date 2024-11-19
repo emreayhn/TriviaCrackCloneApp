@@ -38,16 +38,21 @@ export default function AboutScreen() {
   
 
   const [seconds, setSeconds] = useState(30);
+  const [timerId, setTimerId] = useState(null);  
   
   useEffect(() => {
     if (seconds > 0) {
       const timer = setInterval(() => {
         setSeconds(geriSayım => geriSayım - 1); 
       }, 1000);
-
+      setTimerId(timer)
       return () => clearInterval(timer); 
     }
   }, [seconds]);
+
+  const stopTimer = () => {
+    clearInterval(timerId); 
+  };
 
   const [finishedTime, setFinishedTime] = useState(false);
 
@@ -57,6 +62,7 @@ export default function AboutScreen() {
     }
   },)
 
+ 
  
 
   const handleReset = () => {
@@ -92,6 +98,7 @@ export default function AboutScreen() {
   }
    
    const [showAnswer, setShowAnnwer] = useState("")
+   const [controlAnswer, setControlAnswer] = useState("")
   
   const handleAnswerPress = (selectedAnswer: any) => {
     if (isAnswered === true) return; 
@@ -104,6 +111,8 @@ export default function AboutScreen() {
     }
     setIsAnswered(true); 
     setShowAnnwer(data[currentIndex].correct_answer)
+    setControlAnswer(selectedAnswer)
+    stopTimer()
   };
 
 
@@ -147,7 +156,7 @@ export default function AboutScreen() {
   const handleBoth = (e: React.FormEvent) => {
     handleFinishTest();
     handleSubmit(e); 
-    setSeconds(30); 
+    setSeconds(-1); 
     
   };
   
@@ -278,7 +287,7 @@ let count_quiz = localStorage.getItem("selectedNumber");
   <View style={styles.nexthButton}>
   <Text
   style={{
-    color: data[currentIndex].correct_answer === showAnswer ? 'red' : 'green',
+    color: controlAnswer === data[currentIndex].correct_answer ? 'green' : 'red',
     fontWeight: 'bold',
   }}
 >
